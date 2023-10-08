@@ -1,13 +1,16 @@
 #import rosnode
+import tf
+import time
 import rospy
+import numpy as np
+from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
-from sensor_msgs.msg import JointState
-import time
-import numpy as np
 
 # Define a global variable to store joint positions
 joint_positions = {}
+# Initialize a tf listener
+listener = None
 
 def joint_states_callback(msg):
     # Extract joint positions from the received message
@@ -36,15 +39,26 @@ def init_robot():
     # Create a subscriber to listen to the joint states
     rospy.Subscriber("/joint_states", JointState, joint_states_callback)
 
+    # Initialize the tf listener
+    global listener
+    listener = tf.TransformListener()
+
     time.sleep(1)
     armCmd.publish(init_msg)
     robotCmd.publish(init_msg)
 
     return armCmd, robotCmd
 
-def get_joint_positions():
-    global joint_positions
-    return joint_positions
+def get_end_effector_position():
+    global listener
+    try:
+        # Look up the transformation from the base frame to the end effector frame
+        (trans, rot) = listener.lookupTransform('/base_link', '/wrist_3_joint', rospy.Time(0))
+        
+        # 'trans' now contains the position as [x, y, z]
+        return trans
+    except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        return None
 
 def publish_message(message, armCmd, robotCmd):
 
@@ -54,7 +68,7 @@ def publish_message(message, armCmd, robotCmd):
 
     return
 
-def create_message(positions, velocities, time=4): # Creates a command to send to the robot
+def create_position_message(positions, velocities, time=4): # Creates a command to send to the robot
     message = JointTrajectory()
     
     p = JointTrajectoryPoint()
