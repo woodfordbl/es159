@@ -14,8 +14,8 @@ configurations = [
     [0,0,0,0,0,0]]
 
 for i, config in enumerate(configurations):
-    pos, matrices = lab_robot.fkine(config, True)
-    for m in enumerate(matrices):
+    matrices = lab_robot.fkine(config, True)
+    for j, m in enumerate(matrices):
         pos_m = m[:3,3]
         print(f"Configuration {i+1} | Link {j+1} --> {pos_m}")
         print()
