@@ -50,7 +50,10 @@ class DHRobot: # Robot superclass
             T = T @ arr
             if p:
                 M.append(T)
-        return T, M
+        if p:
+            return M
+        else:
+            return T
 
     def workspace(self, theta_values, granularity=10):
         r"""Takes in list of theta values and generates scatterplot of of robot workspace.
@@ -95,7 +98,7 @@ class DHRobot: # Robot superclass
         # Loop through each set of theta values
         for theta_combo in theta_combos:
             # Set the robot's joint angles to the current theta values
-            pose, m = self.fkine(theta_combo)
+            pose = self.fkine(theta_combo)
             pos = pose[:3, 3]
 
             # Add the current position to the workspace points array
