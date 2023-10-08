@@ -59,5 +59,3 @@ def create_message(positions, velocities, time=4): # Creates a command to send t
     p.time_from_start.secs = time
 
     return message
-
-def find_position(input_vectors):
