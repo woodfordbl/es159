@@ -36,7 +36,7 @@ message = rc.create_position_message(positions=position, velocities=velocities, 
 rc.publish_message(message, armCmd, roboCmd)
 sleep(time)
 
-positions = rc.get_joint_positions()
+positions = rc.get_end_effector_position()
 positions = list(positions.values())
 
 print(f"Current joint positions: {positions}")
