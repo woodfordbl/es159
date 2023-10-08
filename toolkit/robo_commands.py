@@ -58,6 +58,7 @@ def get_end_effector_position():
         # 'trans' now contains the position as [x, y, z]
         return trans
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException):
+        print("Error in getting end effector position")
         return None
 
 def publish_message(message, armCmd, robotCmd):
