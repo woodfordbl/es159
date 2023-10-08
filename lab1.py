@@ -32,7 +32,7 @@ time = 4
 # TESTING
 position = [0,0,0,0,0,0]
 velocities = [0,0,0,0,0,0]
-message = rc.create_message(positions=position, velocities=velocities, time=time)
+message = rc.create_position_message(positions=position, velocities=velocities, time=time)
 rc.publish_message(message, armCmd, roboCmd)
 sleep(time)
 
