@@ -28,6 +28,16 @@ for i, config in enumerate(configurations):
 
 armCmd, roboCmd = rc.init_robot()
 time = 4
+position = [0,0,0, 0,0,0]
+velocities = [0,0,0,0,0,0]
+message = rc.create_message(positions=position, velocities=velocities, time=time)
+rc.publish_message(message, armCmd, roboCmd)
+sleep(time)
+positions = rc.get_joint_positions()
+print(f"Current joint positions: {positions}")
+
+
+"""
 for i, config in enumerate(configurations):
     positions = config
     velocities = [0,0,0,0,0,0]
@@ -38,3 +48,4 @@ for i, config in enumerate(configurations):
 
     positions = rc.get_joint_positions()
     print(f"Current joint positions: {positions}")
+    """
