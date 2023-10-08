@@ -2,6 +2,8 @@ from toolkit import robo_toolkit as rt
 from toolkit import robo_commands as rc
 import numpy as np
 from time import sleep
+
+
 # Set print options
 np.set_printoptions(precision=3, suppress=True)
 lab_robot = rt.LabRobot()
@@ -33,3 +35,6 @@ for i, config in enumerate(configurations):
     rc.publish_message(message, armCmd, roboCmd)
     sleep(time)
     print(f"Completed position {i}")
+
+    positions = rc.get_joint_positions()
+    print(f"Current joint positions: {positions}")
