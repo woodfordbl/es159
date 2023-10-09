@@ -53,10 +53,9 @@ def get_end_effector_position():
     global listener
     try:
         # Look up the transformation from the base frame to the end effector frame
-        (trans, rot) = listener.lookupTransform('/base_link', '/wrist_3_joint', rospy.Time(0))
-        
+        (trans, rot) = listener.lookupTransform('/base_link', '/wrist_3_link', rospy.Time(0))
         # 'trans' now contains the position as [x, y, z]
-        return trans
+        return trans, rot
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
         print("Error:", e)
         return None

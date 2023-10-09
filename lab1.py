@@ -2,6 +2,7 @@ from toolkit import robo_toolkit as rt
 from toolkit import robo_commands as rc
 import numpy as np
 from time import sleep
+import csv
 
 
 # Set print options
@@ -29,28 +30,36 @@ for i, config in enumerate(configurations):
 armCmd, roboCmd = rc.init_robot()
 time = 4
 
-# TESTING
-position = [0,0,0,0,0,0]
-velocities = [0,0,0,0,0,0]
-message = rc.create_position_message(positions=position, velocities=velocities, time=time)
-rc.publish_message(message, armCmd, roboCmd)
-sleep(time)
+pos_dict = {
+    "pos1": {
+        "pred": [],
+        "tested": {
+            "1": [],
+        }
+    }
+}
 
-positions = rc.get_end_effector_position()
-positions = list(positions.values())
+with open('measured_and_predicted_values.csv', mode='w', newline='') as file:
+    # Define the CSV writer
+    csv_writer = csv.writer(file)
 
-print(f"Current joint positions: {positions}")
+    # Write a header row with column names
+    csv_writer.writerow(["Position Index", "Predicted Position", "Actual Position"])
 
+    for j in range(0, 5):
+        for i, config in enumerate(configurations):
+            positions = config
+            velocities = [0, 0, 0, 0, 0, 0]
+            prediction = lab_robot.fkine(config)[:3, 3]
+            message = rc.create_position_message(positions=positions, velocities=velocities, time=time)
+            rc.publish_message(message, armCmd, roboCmd)
+            sleep(time + 2)
 
-"""
-for i, config in enumerate(configurations):
-    positions = config
-    velocities = [0,0,0,0,0,0]
-    message = rc.create_message(positions=positions, velocities=velocities, time=time)
-    rc.publish_message(message, armCmd, roboCmd)
-    sleep(time)
-    print(f"Completed position {i}")
+            pos, rot = rc.get_end_effector_position()
+            # Convert from m to mm
+            pos = np.array(pos) * 1000
 
-    positions = rc.get_joint_positions()
-    print(f"Current joint positions: {positions}")
-    """
+            # Write the values to the CSV file
+            csv_writer.writerow([i, prediction, pos])
+            print(f"Configuration {i+1} completed")
+        print(f"Test {j+1} of 5 completed")
