@@ -58,7 +58,18 @@ class DHRobot: # Robot superclass
     def workspace(self, theta_values, granularity=10):
         r"""Takes in list of theta values and generates scatterplot of of robot workspace.
         theta_values: list of theta values for each joint
-        granularity: number of points to sample for each theta value range"""
+        granularity: number of points to sample for each theta value range
+        _______________________________________________________________
+        Example:
+        theta_values = [
+            0,
+            [-np.pi/4, 0],
+            [-np.pi/2,-np/6],
+            [-np.pi/4, np.pi/4],
+            0,
+            0
+        ]
+        """
         
         if len(theta_values) != len(self.links):
             print("Invalid number of joint angles")
@@ -115,7 +126,7 @@ class DHRobot: # Robot superclass
         # Customize the plot as needed
         ax.set_xlabel('X-axis (mm)')
         ax.set_ylabel('Y-axis (mm)')
-        ax.set_zlabel('Z-axi (mm)')
+        ax.set_zlabel('Z-axis (mm)')
         ax.set_title('Robot Workspace')
 
         plt.show()

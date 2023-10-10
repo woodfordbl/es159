@@ -16,28 +16,12 @@ configurations = [
     [-np.pi/2, -np.pi/4, -7*np.pi/18, 0, -25*np.pi/36, -np.pi/2],
     [-13*np.pi/18, -25*np.pi/36, np.pi/2, -np.pi/9, 13*np.pi/36, np.pi/4],
     [0,0,0,0,0,0]]
-"""
-for i, config in enumerate(configurations):
-    matrices = lab_robot.fkine(config, True)
-    for j, m in enumerate(matrices):
-        pos_m = m[:3,3]
-        print(f"Configuration {i+1} | Link {j+1} --> {pos_m}")
-        print()
-        
-    print("--"*30)
-"""
+
 
 armCmd, roboCmd = rc.init_robot()
 time = 4
 
-pos_dict = {
-    "pos1": {
-        "pred": [],
-        "tested": {
-            "1": [],
-        }
-    }
-}
+
 
 with open('measured_and_predicted_values.csv', mode='w', newline='') as file:
     # Define the CSV writer
