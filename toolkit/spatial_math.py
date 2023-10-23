@@ -86,12 +86,15 @@ def decompSO3R(R):
     else:
         theta = np.arccos(0.5*(tr-1))
 
+        if tr > 3:
+            # If here then R is not a valid rotation matrix and we approximate theta as near 0
+            theta = 0.0001
+
         w_skew = (1/(2*np.sin(theta)))*(R - R.T)
 
         
         w_hat = np.array([w_skew[2,1], w_skew[0,2], w_skew[1,0]])
-        norm = la.norm(w_hat)
-        # We want w_hat to be unit vector so we divide by norm
+
         return w_hat, theta
     
 def logSE3(T):

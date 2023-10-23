@@ -277,7 +277,6 @@ class DHLabRobot(DHRobot): # Robot subclass with DH parameters for lab robot
 
         super().__init__(links=links, name=name)
 
-
 # ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 # Screw Axis Robot Class
 class ScrewRobot: # Robot superclass for screw axis representation
@@ -420,13 +419,13 @@ class ScrewRobot: # Robot superclass for screw axis representation
             if np.shape(T_d) != np.shape(T):
                 print("Cannot calculate error, invalid shape")
                 return
-            
+
             e = T_d - T
             e = abs(e)
-            
+
             # Return linear and angular error
-            angular_error = norm(e[:3,:3])
             linear_error = norm(e[:3,3])
+            angular_error = norm(e[:3,:3])
             return angular_error, linear_error
         
         # Find the current transform matrix from world to end effector
@@ -444,24 +443,22 @@ class ScrewRobot: # Robot superclass for screw axis representation
         # We then update the joint angles and repeat until we reach our tolerance
         increment = 1
         while pos_error > linear_tol or ang_error > angular_tol:
-            
             # Convert from world frame to bodyframe
             T_bd = np.linalg.inv(T_ab) @ T_d
 
             # Take the log to return the matrix form of body twist
             V_b = sm.logSE3(T_bd)
-
+            
             # Decompose this back to a vector format v_b = [w  v]'
             v_b = sm.unblock(V_b)
 
             J = self.body_jacobian(theta)
-            
             J_inv = np.linalg.pinv(J)
-     
+
             theta = theta + J_inv @ v_b
             
             T_ab = self.fkine(theta)
-            
+
             pos_error, ang_error = error(T_d, T_ab)
 
             # This specifies the maximum number of iterations before we stop and assume no convergence
