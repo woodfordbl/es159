@@ -46,36 +46,32 @@ T_list = [T1, T2, T3, T4, T5, T6]
 
 # Iterate through and get each theta list and fkine
 guess = [0, 0, 0, 0, 0, 0]
+home = [0, -np.pi/2, 0, 0, 0, 0]
 velocities = [0, 0, 0, 0, 0, 0]
-time = 4
-
-for T in T_list:
-    thetas = screw_lab_robot.ikine(T, guess)
-    print(f"Thetas: {thetas}")
-    print()
+time = 8
 
 
-    message = rc.create_position_message(positions=thetas, velocities=velocities, time=time)
+theta1 = screw_lab_robot.ikine(T1, guess)
+theta2 = screw_lab_robot.ikine(T1, guess)
+theta3 = screw_lab_robot.ikine(T1, guess, opt=True)
+theta4 = screw_lab_robot.ikine(T1, guess, opt=True)
+theta5 = screw_lab_robot.ikine(T1, guess, opt=True)
+theta6 = screw_lab_robot.ikine(T1, guess, opt=True)
+theta6_2 = screw_lab_robot.ikine(T1, guess)
+
+theta_list = [theta1, theta2, theta3, theta4, theta5, theta6, theta6_2]
+
+for theta in theta_list:
+    homemessage = rc.create_position_message(positions=home, velocities=velocities, time=time)
+    rc.publish_message(homemessage, armCmd, roboCmd)
+    sleep(time + 2)
+    
+    message = rc.create_position_message(positions=theta, velocities=velocities, time=time)
     rc.publish_message(message, armCmd, roboCmd)
 
     sleep(time + 2)
     pos, rot = rc.get_end_effector_position()
     # Convert from m to mm
     pos = np.array(pos) * 1000
-
     print("Position: ", pos)
 
-# For the extra guess we do T6 again with a different guess
-guess = [1, 1, 1, 1, 1, 1]
-thetas = screw_lab_robot.ikine(T6, guess)
-print(f"Thetas: {thetas}")
-
-message = rc.create_position_message(positions=thetas, velocities=velocities, time=time)
-rc.publish_message(message, armCmd, roboCmd)
-
-sleep(time + 2)
-pos, rot = rc.get_end_effector_position()
-# Convert from m to mm
-pos = np.array(pos) * 1000
-
-print("Position: ", pos)
