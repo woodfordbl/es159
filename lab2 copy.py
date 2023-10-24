@@ -1,6 +1,7 @@
 import numpy as np
 from time import sleep
 from toolkit import robo_toolkit as rt
+from toolkit import robo_commands as rc
 
 # set np print options
 np.set_printoptions(suppress=True, precision=4)
@@ -44,10 +45,13 @@ T_list = [T1, T2, T3, T4, T5, T6]
 # Iterate through and get each theta list and fkine
 guess = [0, 0, 0, 0, 0, 0]
 
-thetas = screw_lab_robot.ikine(T3, guess, opt=False)
-print(thetas)
+theta1 = screw_lab_robot.ikine(T3, guess, opt=False)
+print(theta1)
 
-thetas = screw_lab_robot.ikine(T3, guess, opt=True)
-print(thetas)
+theta2 = screw_lab_robot.ikine(T3, guess, opt=True)
+print(theta2)
 
+armCmd, roboCmd = rc.init_robot()
+time = 4
 
+rc.create_position_message(positions=theta1, velocities=[0, 0, 0, 0, 0, 0], time=time)
