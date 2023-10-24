@@ -44,14 +44,18 @@ T_list = [T1, T2, T3, T4, T5, T6]
 
 # Iterate through and get each theta list and fkine
 guess = [0, 0, 0, 0, 0, 0]
+home = [0, -np.pi/2, 0, 0, 0, 0]
 
-theta1 = screw_lab_robot.ikine(T3, guess, opt=False)
-print(theta1)
+theta1 = screw_lab_robot.ikine(T2, guess, opt=False)
+theta2 = screw_lab_robot.ikine(T2, guess, opt=True)
+pos1 = screw_lab_robot.fkine(theta1)
+pos2 = screw_lab_robot.fkine(theta2)
 
-theta2 = screw_lab_robot.ikine(T3, guess, opt=True)
-print(theta2)
+print(f"Position 1: {pos1}")
+print(f"Position 2: {pos2}")
 
 armCmd, roboCmd = rc.init_robot()
-time = 4
+time = 10
 
-rc.create_position_message(positions=theta1, velocities=[0, 0, 0, 0, 0, 0], time=time)
+message = rc.create_position_message(positions=theta2, velocities=[0, 0, 0, 0, 0, 0], time=time)
+rc.publish_message(message, armCmd, roboCmd)

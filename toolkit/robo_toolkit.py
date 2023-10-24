@@ -640,8 +640,8 @@ class ScrewLabRobot(ScrewRobot):
         # Create a robot model with DH parameters
         links = [
                 ScrewRevolute(w=[0,0,1], q=[0,0,0], qlim=qlim, mu=None),
-                ScrewRevolute(w=[0,1,0], q=[0,0,H1], qlim=qlim, mu=np.pi/2),
-                ScrewRevolute(w=[0,1,0], q=[L1,0,H1], qlim=qlim, mu=-np.pi/2),
+                ScrewRevolute(w=[0,1,0], q=[0,0,H1], qlim=qlim, mu=0),
+                ScrewRevolute(w=[0,1,0], q=[L1,0,H1], qlim=qlim, mu=0),
                 ScrewRevolute(w=[0,1,0], q=[L1+L2,0,H1], qlim=qlim, mu=None),
                 ScrewRevolute(w=[0,0,-1], q=[L1+L2,W1,0], qlim=qlim, mu=0),
                 ScrewRevolute(w=[0,1,0], q=[L1+L2,0,H1-H2], qlim=qlim, mu=0)
