@@ -395,7 +395,7 @@ class ScrewRobot: # Robot superclass for screw axis representation
             return t_list, s_list
         return t
     
-    def ikine(self, T_d, theta=0.0, linear_tol=0.01, angular_tol=0.01):
+    def ikine(self, T_d, theta=0.0, linear_tol=0.01, angular_tol=0.01, opt=False):
         r"""
         Inverse kinematics using the Newton Raphton Method
         T_d: desired end effector pose
@@ -474,7 +474,33 @@ class ScrewRobot: # Robot superclass for screw axis representation
         
         # Convert to coterminal angles
         theta = self.coterm(theta)
+
+        if opt:
+            theta = self.optikine(T_d, theta)
+
         return theta
+    
+    def optikine(self, T_d, theta=0.0):
+        r"""
+        Inverse kinemeatics that takes into account optimal joint angles
+        """
+        links = self.links
+
+        if len(theta) != self.num_links:
+            print("Invalid number of joint angles")
+            print(f"Expected {self.num_links} | Received {len(theta)}")
+            return
+        
+        for i, link in enumerate(links):
+            if link.mu is None:
+                continue
+            else:
+                theta[i] = link.mu
+        
+        thetas = self.ikine(T_d, theta)
+        thetas = self.coterm(thetas)
+
+        return thetas
     
     def coterm(self, thetas=0.0):
         r"""
@@ -509,10 +535,11 @@ class ScrewLink:
     ax: if revolute, 3x1 vector of movement axis
     qlim: joint variable limits [min, max]
     sigma: 0 if revolute, 1 if prismatic
+    mu: optimal joint angle, None if not applicable
     """
 
     def __init__(
-            self, w=[0,0,0], q=[0,0,0], v = [0,0,0], theta = 0.0, qlim = [0,0], sigma = 0, **kwargs
+            self, w=[0,0,0], q=[0,0,0], v = [0,0,0], theta = 0.0, qlim = [0,0], sigma = 0, mu = None, **kwargs
     ):
         # Check shape of q, w, v
         if len(q) != 3 or len(w) != 3 or len(v) != 3:
@@ -528,6 +555,7 @@ class ScrewLink:
         self.theta = theta
         self.qlim = qlim
         self.sigma = sigma
+        self.mu = mu
         self.kwargs = kwargs
     
     def expT(self, theta, p=False):
@@ -563,7 +591,7 @@ class ScrewRevolute(ScrewLink):
     w = 3x1 vector of joint axis rotation
     """
     def __init__(
-            self, q, w, qlim, **kwargs
+            self, q, w, qlim, mu, **kwargs
     ):
         
         q = np.array(q)
@@ -578,6 +606,7 @@ class ScrewRevolute(ScrewLink):
             v=v,
             qlim=qlim,
             sigma=sigma,
+            mu=mu,
             **kwargs
         )
 
@@ -610,12 +639,12 @@ class ScrewLabRobot(ScrewRobot):
 
         # Create a robot model with DH parameters
         links = [
-                ScrewRevolute(w=[0,0,1], q=[0,0,0], qlim=qlim),
-                ScrewRevolute(w=[0,1,0], q=[0,0,H1], qlim=qlim),
-                ScrewRevolute(w=[0,1,0], q=[L1,0,H1], qlim=qlim),
-                ScrewRevolute(w=[0,1,0], q=[L1+L2,0,H1], qlim=qlim),
-                ScrewRevolute(w=[0,0,-1], q=[L1+L2,W1,0], qlim=qlim),
-                ScrewRevolute(w=[0,1,0], q=[L1+L2,0,H1-H2], qlim=qlim)
+                ScrewRevolute(w=[0,0,1], q=[0,0,0], qlim=qlim, mu=None),
+                ScrewRevolute(w=[0,1,0], q=[0,0,H1], qlim=qlim, mu=np.pi/2),
+                ScrewRevolute(w=[0,1,0], q=[L1,0,H1], qlim=qlim, mu=-np.pi/2),
+                ScrewRevolute(w=[0,1,0], q=[L1+L2,0,H1], qlim=qlim, mu=None),
+                ScrewRevolute(w=[0,0,-1], q=[L1+L2,W1,0], qlim=qlim, mu=0),
+                ScrewRevolute(w=[0,1,0], q=[L1+L2,0,H1-H2], qlim=qlim, mu=0)
                 ]
         
         name="Lab Robot"
