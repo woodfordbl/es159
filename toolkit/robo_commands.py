@@ -22,6 +22,7 @@ def init_robot():
 
     armCmd = rospy.Publisher('/eff_joint_traj_controller/command', JointTrajectory, queue_size=10)
     robotCmd = rospy.Publisher('/scaled_pos_joint_traj_controller/command',JointTrajectory,queue_size=10)
+    velCmd = rospy.Publisher('/eff_joint_traj_controller/command', JointTrajectory, queue_size=10)
 
     init_msg = JointTrajectory()
 
@@ -47,7 +48,7 @@ def init_robot():
     armCmd.publish(init_msg)
     robotCmd.publish(init_msg)
 
-    return armCmd, robotCmd
+    return armCmd, robotCmd, velCmd
 
 def get_end_effector_position():
     global listener
@@ -60,13 +61,26 @@ def get_end_effector_position():
         print("Error:", e)
         return None
 
-def publish_message(message, armCmd, robotCmd):
+def publish_position_message(message, armCmd, robotCmd):
 
     time.sleep(1)
     armCmd.publish(message)
     robotCmd.publish(message)
 
     return
+
+def publish_velocity_message(message, velCmd):
+    
+        time.sleep(1)
+        velCmd.publish(message)
+
+        return
+
+def create_velocity_message(velocities):
+    velMsg = JointTrajectory()
+    velMsg.Data = velocities
+
+    return velMsg
 
 def create_position_message(positions, velocities, time=4): # Creates a command to send to the robot
     message = JointTrajectory()

@@ -654,7 +654,7 @@ class ScrewLabRobot(ScrewRobot):
 # ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
 # This section will be for general tools to generate coordinate paths for the robot
 
-def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0):
+def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0, delta=False):
     r"""
     This function takes in a robot and a list of coordinates and generates a path for the robot to follow
     robot: robot object
@@ -670,10 +670,11 @@ def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0):
     # Calculate the time step for each point
     time_step = time / len(coords)
     
-    # Initialize joint angles and velocities
-    joint_angles = np.zeros(num_links)
+    # Initialize joint angles, velocities, and deltas
+    joint_angles = []
     velocities = []
     deltas = []
+
     T = np.eye(4)
     T[:3, :3] = pose
 
@@ -688,7 +689,9 @@ def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0):
         T[:3, 3] = coord
 
         joint_angle = robot.ikine(T, guess)
+        joint_angles.append(joint_angle)
         deltas.append(joint_angle - guess)
+
         if i != 0:
             # append to velocities
             velo = (joint_angle - guess)/time_step
@@ -699,5 +702,7 @@ def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0):
         
     # Add the last velocity, which is zero
     velocities[-1] = np.zeros(num_links)
-
-    return velocities, deltas
+    if delta:
+        return joint_angles, velocities, deltas
+    
+    return joint_angles, velocities

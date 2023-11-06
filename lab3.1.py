@@ -15,10 +15,11 @@ guess = [0, 0, 0, 0, 0, 0]
 time = 10
 pose = np.eye(3)
 
-velocities, deltas =  rt.plot_path(robot=lab_robot, coords=points, guess=guess, pose=pose, time=time)
+angles, velocities =  rt.plot_path(robot=lab_robot, coords=points, guess=guess, pose=pose, time=time)
 
+armCmd, robotCmd, velCmd = rc.init_robot()
+time_step = 2
 
-armCmd, roboCmd = rc.init_robot()
-message = rc.create_position_message(guess, velocities, time=time)
-rc.publish_message(message, armCmd, roboCmd)
-
+for angle in angles:
+    message = rc.create_position_message(angle, velocities, time=2)
+    rc.publish_position_message(message=message, armCmd=armCmd, robotCmd=robotCmd)
