@@ -19,16 +19,3 @@ velocities, deltas =  rt.plot_path(robot=lab_robot, coords=points, guess=guess, 
 
 
 armCmd, roboCmd = rc.init_robot()
-
-homemessage = rc.create_position_message(positions=home, velocities=velocities, time=time)
-rc.publish_message(homemessage, armCmd, roboCmd)
-sleep(time + 2)
-
-message = rc.create_position_message(positions=theta, velocities=velocities, time=time)
-rc.publish_message(message, armCmd, roboCmd)
-
-sleep(time + 2)
-pos, rot = rc.get_end_effector_position()
-# Convert from m to mm
-pos = np.array(pos) * 1000
-print("Position: ", pos)
