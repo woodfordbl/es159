@@ -19,3 +19,6 @@ velocities, deltas =  rt.plot_path(robot=lab_robot, coords=points, guess=guess, 
 
 
 armCmd, roboCmd = rc.init_robot()
+message = rc.create_position_message(guess, velocities, time=time)
+rc.publish_message(message, armCmd, roboCmd)
+
