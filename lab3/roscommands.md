@@ -1,0 +1,2 @@
+$ rosrun controller_manager controller_manager stop scaled_pos_joint_traj_controller
+$ rosrun controller_manager controller_manager start joint_group_vel_controller

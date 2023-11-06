@@ -84,10 +84,11 @@ def decompSO3R(R):
         print('Error: Unable to compute w_hat and theta')
         return
     else:
-        theta = np.arccos(0.5*(tr-1))
         
         if tr > 3:
             theta = .001
+        else:
+            theta = np.arccos(0.5*(tr-1))
 
         w_skew = (1/(2*np.sin(theta)))*(R - R.T)
 

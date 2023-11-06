@@ -431,7 +431,7 @@ class ScrewRobot: # Robot superclass for screw axis representation
         
         # Find the current transform matrix from world to end effector
         T_ab = self.fkine(theta)
-        
+
         # Initialize starting error
         pos_error, ang_error = error(T_d, T_ab)
 
@@ -650,3 +650,54 @@ class ScrewLabRobot(ScrewRobot):
         name="Lab Robot"
 
         super().__init__(m=m, links=links, name=name)
+
+# ––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––
+# This section will be for general tools to generate coordinate paths for the robot
+
+def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0):
+    r"""
+    This function takes in a robot and a list of coordinates and generates a path for the robot to follow
+    robot: robot object
+    coords: list of coordinates
+    guess: initial guess for joint angles
+    pose: desired, held pose for the robot
+    time: time to complete path
+    """
+
+   
+    num_links = robot.num_links
+   
+    # Calculate the time step for each point
+    time_step = time / len(coords)
+    
+    # Initialize joint angles and velocities
+    joint_angles = np.zeros(num_links)
+    velocities = []
+    deltas = []
+    T = np.eye(4)
+    T[:3, :3] = pose
+
+    if len(guess) != num_links:
+        print("Invalid number of joint angles")
+        return
+    
+    for i, coord in enumerate(coords):
+
+        # Calculate the inverse kinematics for the given coordinates
+        # Create the pose
+        T[:3, 3] = coord
+
+        joint_angle = robot.ikine(T, guess)
+        deltas.append(joint_angle - guess)
+        if i != 0:
+            # append to velocities
+            velo = (joint_angle - guess)/time_step
+            velocities.append(velo)
+        
+        # Update the guess for the next iteration
+        guess = joint_angle
+        
+    # Add the last velocity, which is zero
+    velocities[-1] = np.zeros(num_links)
+
+    return velocities, deltas
