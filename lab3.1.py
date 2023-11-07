@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 #from toolkit import robo_commands as rc
 from lab3.shapes import plot_square
 import numpy as np
+from lab3.shapes import create_color_gradient
 
 # Set np print options to display 4 decimal places
 np.set_printoptions(precision=3, suppress=True)
@@ -26,9 +27,10 @@ for angle in angles:
 
 # Plot the points
 points = np.array(points)
+colors = create_color_gradient(len(points))
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
-ax.scatter(points[:, 0], points[:, 1], points[:, 2], marker='o')
+ax.scatter(points[:, 0], points[:, 1], points[:, 2], marker='o', c=colors)
 ax.set_xlabel('X')
 ax.set_ylabel('Y')
 ax.set_zlabel('Z')

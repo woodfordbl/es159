@@ -676,7 +676,7 @@ def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0, delta=False)
     velocities = []
     deltas = []
 
-    T = np.eye(4)
+    T = np.array([[0, -1, 0, 0],[0, 0, -1, 0],[1, 0, 0 ,0],[0, 0, 0, 1]])
     T[:3, :3] = pose
 
     if len(guess) != num_links:
@@ -693,7 +693,6 @@ def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0, delta=False)
 
         test = robot.fkine(joint_angle)
         test_pos = test[:3, 3]
-        print(f"Test: {test_pos} vs {coord}")
 
         joint_angles.append(joint_angle)
         deltas.append(joint_angle - guess)
@@ -710,5 +709,4 @@ def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0, delta=False)
     velocities[-1] = np.zeros(num_links)
     if delta:
         return joint_angles, velocities, deltas
-    print(joint_angles)
     return joint_angles, velocities
