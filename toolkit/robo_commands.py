@@ -6,6 +6,8 @@ import numpy as np
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
+from std_msgs.msg import Float64MultiArray
+
 
 # Define a global variable to store joint positions
 joint_positions = {}
@@ -22,7 +24,7 @@ def init_robot():
 
     armCmd = rospy.Publisher('/eff_joint_traj_controller/command', JointTrajectory, queue_size=10)
     robotCmd = rospy.Publisher('/scaled_pos_joint_traj_controller/command',JointTrajectory,queue_size=10)
-    velCmd = rospy.Publisher('/eff_joint_traj_controller/command', JointTrajectory, queue_size=10)
+    velCmd = rospy.Publisher('/joint_group_vel_controller/command', JointTrajectory, queue_size=10)
 
     init_msg = JointTrajectory()
 
@@ -77,25 +79,8 @@ def publish_velocity_message(message, velCmd):
         return
 
 def create_velocity_message(velocities):
-    velMsg = JointTrajectory()
-
-    # Create a JointTrajectoryPoint
-    p = JointTrajectoryPoint()
-
-    # Set the velocities
-    p.velocities = velocities
-
-    # Add the point to the trajectory
-    velMsg.points = [p]
-
-    # Set the joint names
-    velMsg.joint_names = ['shoulder_pan_joint', 
-                          'shoulder_lift_joint', 
-                          'elbow_joint', 
-                          'wrist_1_joint', 
-                          'wrist_2_joint', 
-                          'wrist_3_joint']
-
+    velMsg = Float64MultiArray()
+    velMsg.data = velocities
     return velMsg
 
 def create_position_message(positions, velocities, time=4): # Creates a command to send to the robot
