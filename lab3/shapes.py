@@ -15,31 +15,30 @@ def create_color_gradient(num_points):
 
     return colors
 
-# Trace an square in the xz plane that is centered at some value
 def plot_square(center_x, center_y, center_z, side_length, num_points, show=False):
     half_side = side_length / 2
     step = side_length / (num_points - 1)
 
-    x_points = np.linspace(center_x - half_side, center_x + half_side, num_points)
+    y_points = np.linspace(center_y - half_side, center_y + half_side, num_points)
     z_points = np.linspace(center_z - half_side, center_z + half_side, num_points)
 
     edge_points = []
 
     # Add points along the top edge
-    for x in x_points:
-        edge_points.append([x, center_y, center_z + half_side])
+    for y in y_points:
+        edge_points.append([center_x, y, center_z + half_side])
 
     # Add points along the right edge
     for z in z_points[1:-1]:
-        edge_points.append([center_x + half_side, center_y, z])
+        edge_points.append([center_x, center_y + half_side, z])
 
     # Add points along the bottom edge (in reverse order)
-    for x in x_points[::-1]:
-        edge_points.append([x, center_y, center_z - half_side])
+    for y in y_points[::-1]:
+        edge_points.append([center_x, y, center_z - half_side])
 
     # Add points along the left edge (in reverse order)
     for z in z_points[-2:0:-1]:
-        edge_points.append([center_x - half_side, center_y, z])
+        edge_points.append([center_x, center_y - half_side, z])
 
     # Convert the edge points to a NumPy array
     edge_points = np.array(edge_points)

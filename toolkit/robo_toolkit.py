@@ -672,6 +672,7 @@ def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0, delta=False)
     
     # Initialize joint angles, velocities, and deltas
     joint_angles = []
+    test = []
     velocities = []
     deltas = []
 
@@ -689,6 +690,11 @@ def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0, delta=False)
         T[:3, 3] = coord
 
         joint_angle = robot.ikine(T, guess)
+
+        test = robot.fkine(joint_angle)
+        test_pos = test[:3, 3]
+        print(f"Test: {test_pos} vs {coord}")
+
         joint_angles.append(joint_angle)
         deltas.append(joint_angle - guess)
 
@@ -704,5 +710,5 @@ def plot_path(robot, coords=[0,0,0], guess=[], pose=[], time = 0.0, delta=False)
     velocities[-1] = np.zeros(num_links)
     if delta:
         return joint_angles, velocities, deltas
-    
+    print(joint_angles)
     return joint_angles, velocities

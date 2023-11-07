@@ -1,5 +1,6 @@
 import numpy as np
 import scipy.linalg as la
+import cmath as cm
 
 def cot(x):
     # Returns the cotangent of x
@@ -84,12 +85,11 @@ def decompSO3R(R):
         print('Error: Unable to compute w_hat and theta')
         return
     else:
-        
-        if tr > 3:
-            theta = .001
+        if tr == 3:
+            theta = .0001 
         else:
-            theta = np.arccos(0.5*(tr-1))
-
+            theta = cm.acos(0.5*(tr-1))
+        
         w_skew = (1/(2*np.sin(theta)))*(R - R.T)
 
         
