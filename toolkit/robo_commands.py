@@ -78,7 +78,23 @@ def publish_velocity_message(message, velCmd):
 
 def create_velocity_message(velocities):
     velMsg = JointTrajectory()
-    velMsg.Data = velocities
+
+    # Create a JointTrajectoryPoint
+    p = JointTrajectoryPoint()
+
+    # Set the velocities
+    p.velocities = velocities
+
+    # Add the point to the trajectory
+    velMsg.points = [p]
+
+    # Set the joint names
+    velMsg.joint_names = ['shoulder_pan_joint', 
+                          'shoulder_lift_joint', 
+                          'elbow_joint', 
+                          'wrist_1_joint', 
+                          'wrist_2_joint', 
+                          'wrist_3_joint']
 
     return velMsg
 

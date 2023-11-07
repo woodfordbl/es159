@@ -8,7 +8,7 @@ from lab3.shapes import create_color_gradient
 # Set np print options to display 4 decimal places
 np.set_printoptions(precision=3, suppress=True)
 
-points = plot_square(100, 500, 500, 100, 10)
+points = plot_square(100, 500, 500, 100, 4)
 
 # Now we want to create the joint angles that will move the arm to the elipse
 lab_robot = rt.ScrewLabRobot()
