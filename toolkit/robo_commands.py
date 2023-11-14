@@ -24,8 +24,8 @@ def init_robot():
 
     armCmd = rospy.Publisher('/eff_joint_traj_controller/command', JointTrajectory, queue_size=10)
     robotCmd = rospy.Publisher('/scaled_pos_joint_traj_controller/command',JointTrajectory,queue_size=10)
-    velCmd = rospy.Publisher('/joint_group_vel_controller/command', JointTrajectory, queue_size=10)
-
+    velCmd = rospy.Publisher('/joint_group_vel_controller/command', Float64MultiArray, queue_size=10)
+       
     init_msg = JointTrajectory()
 
 
@@ -62,6 +62,12 @@ def get_end_effector_position():
     except (tf.LookupException, tf.ConnectivityException, tf.ExtrapolationException) as e:
         print("Error:", e)
         return None
+    
+def get_current_joint_angles():
+    global joint_positions
+    return joint_positions
+
+
 
 def publish_position_message(message, armCmd, robotCmd):
 
@@ -72,11 +78,9 @@ def publish_position_message(message, armCmd, robotCmd):
     return
 
 def publish_velocity_message(message, velCmd):
-    
-        time.sleep(1)
-        velCmd.publish(message)
-
-        return
+    time.sleep(1)
+    velCmd.publish(message)
+    return
 
 def create_velocity_message(velocities):
     velMsg = Float64MultiArray()

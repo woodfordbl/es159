@@ -171,3 +171,24 @@ def unblock(T):
     v = T[0:3, 3]
 
     return np.concatenate((w,v))
+
+def lie(V):
+    r"""
+    Returns the Lie bracket of V
+    """
+    if V.shape != (6,):
+        print('Input matrix must be 6x1')
+        return
+    w = V[0:3]
+    v = V[3:6]
+
+    w_skew = skew(w)
+    v_skew = skew(v)
+
+    lie = np.zeros((6,6))
+
+    lie[0:3, 0:3] = w_skew
+    lie[3:6, 3:6] = w_skew
+    lie[3:6, 0:3] = v_skew
+
+    return lie

@@ -2,7 +2,8 @@ import numpy as np
 from . import spatial_math as sm
 from scipy.linalg import expm, norm
 import matplotlib.pyplot as plt
-
+# Set np print
+np.set_printoptions(precision=4, suppress=True)
 
 # This is overkill for this lab but I was interested in piecing together a framework for future labs/projects
 # Talked with Kade abt this too, but the framework for much of this class based methodology for defining these
@@ -292,16 +293,26 @@ class ScrewRobot: # Robot superclass for screw axis representation
     """
 
     def __init__(
-            self, m, links = [], name=None, **kwargs
+            self, m, links = [], gravity = [0,0,0,0,0,0], name=None, **kwargs
     ):
+        
         
         self.m = m
         self.adj_inv_m = sm.adj(np.linalg.inv(m))
         self.links = links
         self.num_links = len(links)
+        self.gravity = gravity
         self.name = name
         self.kwargs = kwargs
-    
+
+        for i, link in enumerate(links):
+            M = np.eye(4)
+            M[:3,3] = link.center
+            link.M = M
+
+        for link in links:
+            link.A = link.self_screw()
+
     def jacobian(self, q):
         r"""
         Space jacobian for screw axis robot
@@ -358,7 +369,7 @@ class ScrewRobot: # Robot superclass for screw axis representation
             J[:,i] = A @ b_list[i]
 
         return J
-        
+        z
     def fkine(self, q, p=False):
         r"""
         Forward kinematics for screw axis robot, we iterate through each links exponential twist matrix and multiply them together
@@ -526,6 +537,87 @@ class ScrewRobot: # Robot superclass for screw axis representation
             thetas = thetas
         return thetas
 
+    def idynamics(self, thetas=[], dthetas=[], ddthetas=[], F=[]):
+        r"""
+        Inverse dynamics for a given robot using Newton Euler method
+        thetas: joint angles
+        dthetas: joint velocities
+        ddthetas: joint accelerations
+        F: external forces at the end effector
+        """
+
+        # Check to make sure we have the correct number of inputs
+        if len(thetas) != self.num_links or len(dthetas) != self.num_links or len(ddthetas) != self.num_links:
+            print("Invalid number of joint angles, velocities, or accelerations")
+            print(f"Expected {self.num_links} | Received {len(thetas)} | {len(dthetas)} | {len(ddthetas)}")
+            return
+        
+        # Initialize lists for V, AdT, adV, V_dot, taus, and Fs
+        V = []
+        AdT = []
+        adV = []
+        V_dot = []
+        taus = []
+        Fs =[]
+
+        # Add the bases to the matrices
+        V.append(np.zeros((6,)))
+        V_dot.append(self.gravity)
+        Fs.append(F)
+
+        # Works on test cases
+        for i, link in enumerate(self.links):
+            print("Forward Link ", i+1)
+            A = link.A
+
+            T_i = expm(-sm.block(A) * thetas[i]) @ np.linalg.inv(link.M) @ self.links[i-1].M
+            
+            AdT_i = sm.adj(T_i)
+            
+            V_i = AdT_i @ V[i] + A * dthetas[i]
+            adV_i = sm.lie(V_i)
+
+            V_dot_i = sm.adj(T_i) @ V_dot[-1] + adV_i @ A *dthetas[i] + A * ddthetas[i]
+            print(f"V{i+1}: {V_i}")
+            print(f"V_dot{i+1}: {V_dot_i}")
+            print(f"adV{i+1}: {adV_i}")
+            print(f"AdT{i+1}{i}: {AdT_i}")
+            
+            print()
+            
+            V.append(V_i)
+            AdT.append(AdT_i)
+            adV.append(adV_i)
+            V_dot.append(V_dot_i)
+
+        T_last = np.linalg.inv(self.m) @ self.links[-1].M
+        AdT.append(sm.adj(T_last))
+        print()
+        print("----"*30)
+        print("----"*30)
+        print()
+        for i, link in enumerate(reversed(self.links), start=1):
+            i = self.num_links - i
+            print()
+            print("Backward Link ", i+1)
+            print(f"G {i+1} ", link.G)
+            print(f"F_i+1", Fs[-1])
+            print(f"AdT {i+2}{i+1}", AdT[i+1])
+            print(f"C1", AdT[i+1].T @ Fs[-1])
+            print(f"V_dot {i+1}", V_dot[i+1])
+            print(f"C2", link.G @ V_dot[i+1])
+            print(f"V {i+1}", V[i+1])
+            print(f"C3", adV[i].T @ (link.G @ V[i]))
+
+            # Stuck here this section is only part that doesnt work :(
+            F_i = AdT[i+1].T @ Fs[-1] + link.G @ V_dot[i+1] - adV[i].T @ (link.G @ V[i+1])
+            Fs.append(F_i)
+            tau = F_i.T @ link.A
+            print("F_i: ", F_i)
+            taus.append(tau)
+        taus.reverse()
+        return taus
+
 class ScrewLink:
     r"""
     This specifies the screw axis parameters for a general link (as a superclass)
@@ -539,22 +631,43 @@ class ScrewLink:
     """
 
     def __init__(
-            self, w=[0,0,0], q=[0,0,0], v = [0,0,0], theta = 0.0, qlim = [0,0], sigma = 0, mu = None, **kwargs
+            self, w=[0,0,0], q=[0,0,0], v = [0,0,0], theta = 0.0, qlim = [0,0], l = 0.0, rho = 0.0, rad = 0.0, mass = None,  G = [], center = [], sigma = 0, mu = None, **kwargs
     ):
         # Check shape of q, w, v
         if len(q) != 3 or len(w) != 3 or len(v) != 3:
             print("Invalid screw axis parameters")
             return
+        if not mass:
+            if not rho or not rad:
+                print("No mass or density and radius specified for link")
+            else:
+                mass = rho * rad**2 * np.pi * l
 
         s = np.concatenate((w, v))
- 
+        
+        def inertial_matrix(self):
+            G = np.eye(6)
+            G[3:, 3:] = np.eye(3) * self.mass
+            G[1,1] = 0.25 * self.mass * (self.rad**2 * self.rad**2)
+            G[2,2] = 0.5 * self.mass * (self.l**2)
+            G[3,3] = 0.25 * self.mass * (self.rad**2 * self.rad**2)
+            return G
+
+
         self.q = q
         self.w = w
         self.v = v
         self.s = s
+        self.A = None
         self.theta = theta
         self.qlim = qlim
+        self.rho = rho
+        self.rad = rad
+        self.mass = mass
         self.sigma = sigma
+        self.M = None
+        self.G = G
+        self.center = center
         self.mu = mu
         self.kwargs = kwargs
     
@@ -584,6 +697,12 @@ class ScrewLink:
         
         return expT
 
+    def self_screw (self):
+        M_inv = np.linalg.inv(self.M)
+        adj_M_inv = sm.adj(M_inv)
+        A = adj_M_inv @ self.s
+        return A
+    
 class ScrewRevolute(ScrewLink):
     r"""
     This specifies the screw axis parameters for a revolute link (as a subclass)
