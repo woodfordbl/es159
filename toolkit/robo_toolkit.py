@@ -596,6 +596,9 @@ class ScrewRobot: # Robot superclass for screw axis representation
         print("----"*30)
         print("----"*30)
         print()
+
+        # Works on test cases up to this point, have no idea where it breaks
+        # Spend probably 4 hours trying to figure out what was wrong with this section
         for i, link in enumerate(reversed(self.links), start=1):
             i = self.num_links - i
             print()
