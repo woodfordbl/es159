@@ -34,4 +34,3 @@ for i, coord in enumerate(points):
 
     joint_angle = lab_robot.ikine(T, guess)
 
-   

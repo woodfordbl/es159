@@ -3,11 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from lab4 import search
-from toolkit import robo_toolkit as rt
 
 
 # Load the file to be searched
-file = open("lab4/maps/maze_hard.txt", "r")
+file = open("lab4/maps/maze_medium.txt", "r")
 
 # Initializing function that formats the input file
 def main():
@@ -55,13 +54,14 @@ maze = search.map(xmax=xmax, ymax=ymax, xstart=startx, ystart=starty, xgoal=goal
 
 maze.plot(path=False)
 
+# Run the search
 maze.astar_search()
 
+# Plot the path
 maze.plot(path=True)
 
-path = maze.path
-
 # Convert the path to the correct coordinates
+path = maze.path
 path = np.array(path)
 
 # Scale the path back up
@@ -78,3 +78,7 @@ print(f"Path length: {path_length}mm")
 plt.plot(path[:,0], path[:,1], 'r-')
 plt.show()
 
+# Add Z coordinate
+z = np.zeros((len(path), 1))
+z.fill(-80)
+path = np.hstack((path, z))

@@ -305,13 +305,17 @@ class ScrewRobot: # Robot superclass for screw axis representation
         self.name = name
         self.kwargs = kwargs
 
-        for i, link in enumerate(links):
-            M = np.eye(4)
-            M[:3,3] = link.center
-            link.M = M
+        try:
+            for i, link in enumerate(links):
+                M = np.eye(4)
+                M[:3,3] = link.center
+                link.M = M
 
-        for link in links:
-            link.A = link.self_screw()
+            for link in links:
+                link.A = link.self_screw()
+        except:
+            print("Unable to calculate A matrix for links")
+
 
     def jacobian(self, q):
         r"""
