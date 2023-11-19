@@ -50,7 +50,7 @@ xmax, ymax, startx, starty, goalx, goaly, obstacles, scalex, scaley = main()
 granularity = 20
 
 # Create the map
-maze = search.map(xmax=xmax, ymax=ymax, xstart=startx, ystart=starty, xgoal=goalx, ygoal=goaly, obs=obstacles, margin=25, granularity=granularity)
+maze = search.map(xmax=xmax, ymax=ymax, xstart=startx, ystart=starty, xgoal=goalx, ygoal=goaly, obs=obstacles, margin=29, granularity=granularity)
 
 maze.plot(path=False)
 
@@ -76,12 +76,11 @@ for i in range(len(path) - 1):
 print(f"Path length: {path_length}mm")
 
 plt.plot(path[:,0], path[:,1], 'r-')
-plt.show()
 
 # Add Z coordinate
 z = np.zeros((len(path), 1))
 z.fill(-80)
 path = np.hstack((path, z))
 
-# save the path to a csv file
+# Save the path to a csv
 np.savetxt("lab4.csv", path, delimiter=",")

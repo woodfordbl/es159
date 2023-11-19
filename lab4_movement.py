@@ -51,7 +51,7 @@ end_position[2,3] = 100
 thetas.append(robot.ikine(end_position, theta=thetas[-1]))
 
 # Move the robot to the rest position
-rc.publish_position_message(rc.create_position_message(rest, [0,0,0,0,0,0], time=1), armCmd, robotCmd)
+rc.publish_position_message(rc.create_position_message(rest_position, [0,0,0,0,0,0], time=1), armCmd, robotCmd)
 
 # Move the robot to the start position
 rc.publish_position_message(rc.create_position_message(start_position, [0,0,0,0,0,0], time=2), armCmd, robotCmd)
