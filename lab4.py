@@ -78,7 +78,7 @@ print(f"Path length: {path_length}mm")
 plt.plot(path[:,0], path[:,1], 'r-')
 
 # subtract 10 from all y coord
-path[:,1] = path[:,1] - 20
+path[:,1] = path[:,1] - 30
 
 # Add Z coordinate
 z = np.zeros((len(path), 1))
