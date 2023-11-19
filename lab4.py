@@ -6,7 +6,7 @@ from lab4 import search
 
 
 # Load the file to be searched
-file = open("lab4/maps/maze_medium.txt", "r")
+file = open("lab4/maps/maze_in_lab.txt", "r")
 
 # Initializing function that formats the input file
 def main():
@@ -50,7 +50,7 @@ xmax, ymax, startx, starty, goalx, goaly, obstacles, scalex, scaley = main()
 granularity = 20
 
 # Create the map
-maze = search.map(xmax=xmax, ymax=ymax, xstart=startx, ystart=starty, xgoal=goalx, ygoal=goaly, obs=obstacles, margin=20, granularity=granularity)
+maze = search.map(xmax=xmax, ymax=ymax, xstart=startx, ystart=starty, xgoal=goalx, ygoal=goaly, obs=obstacles, margin=25, granularity=granularity)
 
 maze.plot(path=False)
 
@@ -82,3 +82,6 @@ plt.show()
 z = np.zeros((len(path), 1))
 z.fill(-80)
 path = np.hstack((path, z))
+
+# save the path to a csv file
+np.savetxt("lab4.csv", path, delimiter=",")
