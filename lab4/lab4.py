@@ -6,7 +6,7 @@ from lab4 import search
 
 
 # Load the file to be searched
-file = open("lab4/maps/maze_in_lab.txt", "r")
+file = open("lab4/maps/maze_hard.txt", "r")
 
 # Initializing function that formats the input file
 def main():
@@ -50,7 +50,7 @@ xmax, ymax, startx, starty, goalx, goaly, obstacles, scalex, scaley = main()
 granularity = 20
 
 # Create the map
-maze = search.map(xmax=xmax, ymax=ymax, xstart=startx, ystart=starty, xgoal=goalx, ygoal=goaly, obs=obstacles, margin=29, granularity=granularity)
+maze = search.map(xmax=xmax, ymax=ymax, xstart=startx, ystart=starty, xgoal=goalx, ygoal=goaly, obs=obstacles, margin=20, granularity=granularity)
 
 maze.plot(path=False)
 
@@ -67,6 +67,10 @@ path = np.array(path)
 # Scale the path back up
 path[:,0] = path[:,0] * granularity + scalex
 path[:,1] = path[:,1] * granularity + scaley
+
+# Plot the path
+plt.plot(path[:,0], path[:,1], 'r-')
+plt.show()
 
 # Calculate the path length
 path_length = 0
