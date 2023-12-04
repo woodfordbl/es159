@@ -29,6 +29,7 @@ y2_actual = 425
 # Load image
 img = vision.image(data=data, cropx=cropx,cropy=cropy)
 img.crop()
+img.showcolor()
 
 red_threshold = 200 
 green_threshold = 140 
