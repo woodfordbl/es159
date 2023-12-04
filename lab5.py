@@ -46,7 +46,7 @@ x_scale = (x2_actual-x1_actual) / (x2-x1)
 y_scale = (y2_actual-y1_actual) / (y2-y1)
 
 # Search for the destination
-pickup = img.find_square(filtered_img=blue_filtered, size=12, threshold=0.75)
+pickup = img.find_square(filtered_img=blue_filtered, size=35, threshold=0.9)
 dropoff = img.find_square(filtered_img=green_filtered, size=35, threshold=0.9)
 
 # Convert to real world coordinates
