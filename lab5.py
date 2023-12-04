@@ -1,13 +1,12 @@
-import json
 import numpy as np
 
 import vision
-from lab4 import search
 
 from toolkit import robo_toolkit as rt
 from toolkit import robo_commands as rc
 
 
+#import json
 #with open('lab5.json') as f:
 #    data = json.load(f)
 
