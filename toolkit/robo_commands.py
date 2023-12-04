@@ -125,7 +125,19 @@ def close_gripper(gripper_srv):
     response = gripper_srv(position=255, speed=255, force=255)
     return
 
+class ImageReceiver:
+    def __init__(self, topic='/usb_cam/image_raw'):
+        self.cam_msg = None
+        self.cam_sub = rospy.Subscriber(topic, Image, self.image_callback)
+
+    def image_callback(self, data):
+        self.cam_msg = data  # Update cam_msg with the received image data
+
 def get_image():
-    # Wait for a message to be published on the '/usb_cam/image_raw' topic
-    cam_msg = rospy.wait_for_message('/usb_cam/image_raw', Image)
-    return cam_msg  # Return the received image message
+    receiver = ImageReceiver()  # Create an instance of the ImageReceiver class
+
+    rate = rospy.Rate(10)  # Adjust this rate according to your needs
+    while not rospy.is_shutdown():
+        if receiver.cam_msg is not None:
+            return receiver.cam_msg  # Return the received image message
+        rate.sleep()
