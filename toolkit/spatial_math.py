@@ -52,13 +52,14 @@ def decompSO3R(R):
     tr = np.trace(R)
 
     # Following algorithm based on section 3.2.3.3 of Modern Robotics
-    if R == np.eye(4):
-        # If R is identity matrix, then w = undefined and theta = 0
-        theta = 0
-        w = None
-
-        return w, theta
-    elif tr == -1:
+    
+    #if R == np.eye(3):
+    #    # If R is identity matrix, then w = undefined and theta = 0
+    #    theta = 0
+    #    w = None
+    #
+    #    return w, theta
+    if tr == -1:
         theta = np.pi
 
         if R[2,2] > -1:

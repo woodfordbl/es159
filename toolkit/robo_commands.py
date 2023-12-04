@@ -7,6 +7,12 @@ from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
 from std_msgs.msg import Float64MultiArray
+from std_msgs.msg import Int32
+
+from robotiq_hande_ros_driver.srv import gripper_service 
+
+from sensor_msgs.msg import Image  # Assuming the message type is sensor_msgs/Image
+
 
 
 # Define a global variable to store joint positions
@@ -19,12 +25,14 @@ def joint_states_callback(msg):
     global joint_positions
     joint_positions = dict(zip(msg.name, msg.position))
 
-def init_robot():
+def init_robot(gripper=False):
     rospy.init_node("Node1")
+    
 
     armCmd = rospy.Publisher('/eff_joint_traj_controller/command', JointTrajectory, queue_size=10)
     robotCmd = rospy.Publisher('/scaled_pos_joint_traj_controller/command',JointTrajectory,queue_size=10)
     velCmd = rospy.Publisher('/joint_group_vel_controller/command', Float64MultiArray, queue_size=10)
+
        
     init_msg = JointTrajectory()
 
@@ -50,6 +58,10 @@ def init_robot():
     armCmd.publish(init_msg)
     robotCmd.publish(init_msg)
 
+    if gripper:
+        gripper_srv = rospy.ServiceProxy('gripper_service', gripper_service)
+        return armCmd, robotCmd, velCmd, gripper_srv
+
     return armCmd, robotCmd, velCmd
 
 def get_end_effector_position():
@@ -66,8 +78,6 @@ def get_end_effector_position():
 def get_current_joint_angles():
     global joint_positions
     return joint_positions
-
-
 
 def publish_position_message(message, armCmd, robotCmd):
 
@@ -106,3 +116,16 @@ def create_position_message(positions, velocities, time=4): # Creates a command 
     p.time_from_start.secs = time
 
     return message
+
+def open_gripper(gripper_srv):
+    response = gripper_srv(position=0, speed=255, force=255)
+    return
+
+def close_gripper(gripper_srv):
+    response = gripper_srv(position=255, speed=255, force=255)
+    return
+
+def get_image():
+    # Wait for a message to be published on the '/usb_cam/image_raw' topic
+    cam_msg = rospy.wait_for_message('/usb_cam/image_raw', Image)
+    return cam_msg  # Return the received image message

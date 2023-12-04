@@ -462,7 +462,6 @@ class ScrewRobot: # Robot superclass for screw axis representation
             
             # Convert from world frame to bodyframe
             T_bd = np.linalg.inv(T_ab) @ T_d
-
             # Take the log to return the matrix form of body twist
             V_b = sm.logSE3(T_bd)
 
@@ -484,9 +483,7 @@ class ScrewRobot: # Robot superclass for screw axis representation
             if increment > 100:
                 print("Failed to converge")
                 return None
-            
-        print(f"Converged in {increment} iterations")
-        
+                    
         # Convert to coterminal angles
         theta = self.coterm(theta)
 
