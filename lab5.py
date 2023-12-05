@@ -1,5 +1,5 @@
 import numpy as np
-
+import time
 import vision
 
 from toolkit import robo_toolkit as rt
@@ -137,8 +137,11 @@ for angle in dropoff_path_angles:
 # Drop off the object
 dropoff_pose = lab_robot.fkine(dropoff_path_angles[-1])
 dropoff_pose[2,3] = z_pickup
-rc.publish_position_message(rc.create_position_message(dropoff_path_angles[-1], [0,0,0,0,0,0], time=1), armCmd, robotCmd)
+dropoff_angle = lab_robot.ikine(T_d = dropoff_pose, theta = dropoff_path_angles[-1])
+rc.publish_position_message(rc.create_position_message(dropoff_angle, [0,0,0,0,0,0], time=1), armCmd, robotCmd)
 rc.open_gripper(gripper_srv)
+
+rc.publish_position_message(rc.create_position_message(dropoff_path_angles[-1], [0,0,0,0,0,0], time=1), armCmd, robotCmd)
 
 
 # Return to normal position
