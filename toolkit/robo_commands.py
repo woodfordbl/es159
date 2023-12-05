@@ -142,7 +142,7 @@ def close_gripper(gripperpub):
 
     return
 
-def get_image_as_string():
+def get_image():
     rospy.init_node('image_receiver_node')  # Initialize the ROS node
     bridge = CvBridge()
     receiver = ImageReceiver()  # Create an instance of the ImageReceiver class

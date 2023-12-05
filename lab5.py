@@ -10,12 +10,15 @@ from toolkit import robo_commands as rc
 #with open('lab5.json') as f:
 #    data = json.load(f)
 
-armCmd, robotCmd, velCmd, gripper_srv = rc.init_robot()
+armCmd, robotCmd, velCmd, gripper_srv = rc.init_robot(gripper=True)
 
 image = rc.get_image()
-width = image.width
-height = image.height
-data = image.data
+
+data = {
+    "Data": image,
+    "Height": 640,
+    "Width": 400
+}
 
 cropx = [150,400]
 cropy = [50,550]
