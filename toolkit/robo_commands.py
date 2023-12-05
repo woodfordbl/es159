@@ -58,7 +58,13 @@ def init_robot(gripper=False):
     armCmd.publish(init_msg)
     robotCmd.publish(init_msg)
 
+    import rospy
+    from std_msgs.msg import Int32
+    from robotiq_hande_ros_driver.srv import gripper_service 
+
+
     if gripper:
+        rospy.init_node("gripper_test_node")
         gripper_srv = rospy.ServiceProxy('gripper_service', gripper_service)
         return armCmd, robotCmd, velCmd, gripper_srv
 
