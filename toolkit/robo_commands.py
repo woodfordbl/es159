@@ -3,6 +3,8 @@ import tf
 import time
 import rospy
 import numpy as np
+from cv_bridge import CvBridge
+
 from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
@@ -131,6 +133,20 @@ def close_gripper(gripper_srv):
     response = gripper_srv(position=255, speed=255, force=255)
     return
 
+def get_image_as_string():
+    rospy.init_node('image_receiver_node')  # Initialize the ROS node
+    bridge = CvBridge()
+    receiver = ImageReceiver()  # Create an instance of the ImageReceiver class
+
+    rate = rospy.Rate(10)  # Adjust this rate according to your needs
+    while not rospy.is_shutdown():
+        if receiver.cam_msg is not None:
+            image_data = bridge.imgmsg_to_cv2(receiver.cam_msg, desired_encoding="passthrough")
+            byte_data = image_data.tobytes()  # Get the image data as a byte string
+            int_data = list(byte_data)  # Convert byte string to a list of integers
+            return ' '.join(str(x) for x in int_data)  # Convert to a space-separated string of integers
+        rate.sleep()
+
 class ImageReceiver:
     def __init__(self, topic='/usb_cam/image_raw'):
         self.cam_msg = None
@@ -138,12 +154,3 @@ class ImageReceiver:
 
     def image_callback(self, data):
         self.cam_msg = data  # Update cam_msg with the received image data
-
-def get_image():
-    receiver = ImageReceiver()  # Create an instance of the ImageReceiver class
-
-    rate = rospy.Rate(10)  # Adjust this rate according to your needs
-    while not rospy.is_shutdown():
-        if receiver.cam_msg is not None:
-            return receiver.cam_msg  # Return the received image message
-        rate.sleep()
