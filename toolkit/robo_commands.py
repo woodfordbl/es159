@@ -9,14 +9,19 @@ from sensor_msgs.msg import JointState
 from trajectory_msgs.msg import JointTrajectory
 from trajectory_msgs.msg import JointTrajectoryPoint
 from std_msgs.msg import Float64MultiArray
+from std_msgs.msg import Float32MultiArray
 from std_msgs.msg import Int32
 
 from robotiq_hande_ros_driver.srv import gripper_service 
 
 from sensor_msgs.msg import Image  # Assuming the message type is sensor_msgs/Image
 
-
-
+#480x640 image
+data = {
+    'data': [1,2,3,4,5,6,7,8,9,10],
+    'width': 640,
+    'height': 480   
+}
 # Define a global variable to store joint positions
 joint_positions = {}
 # Initialize a tf listener
@@ -60,15 +65,9 @@ def init_robot(gripper=False):
     armCmd.publish(init_msg)
     robotCmd.publish(init_msg)
 
-    import rospy
-    from std_msgs.msg import Int32
-    from robotiq_hande_ros_driver.srv import gripper_service 
-
-
     if gripper:
-        rospy.init_node("gripper_test_node")
-        gripper_srv = rospy.ServiceProxy('gripper_service', gripper_service)
-        return armCmd, robotCmd, velCmd, gripper_srv
+        gripperpub = rospy.Publisher('/gripper_service_es159', Float32MultiArray, queue_size=10)
+        return armCmd, robotCmd, velCmd, gripperMsg
 
     return armCmd, robotCmd, velCmd
 
@@ -125,12 +124,22 @@ def create_position_message(positions, velocities, time=4): # Creates a command 
 
     return message
 
-def open_gripper(gripper_srv):
-    response = gripper_srv(position=0, speed=255, force=255)
+def open_gripper(gripperpub):
+    gripperMsg = Float32MultiArray()
+    gripperMsg.data = [0, 255, 255]
+
+    # Publish the gripper message
+    gripperpub.publish(gripperMsg)
     return
 
-def close_gripper(gripper_srv):
-    response = gripper_srv(position=255, speed=255, force=255)
+def close_gripper(gripperpub):
+
+    gripperMsg = Float32MultiArray()
+    gripperMsg.data = [255, 255, 255]
+
+    # Publish the gripper message
+    gripperpub.publish(gripperMsg)
+
     return
 
 def get_image_as_string():
