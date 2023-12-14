@@ -570,8 +570,11 @@ class ScrewRobot: # Robot superclass for screw axis representation
         for i, link in enumerate(self.links):
             print("Forward Link ", i+1)
             A = link.A
+            M =  np.linalg.inv(link.M) @ self.links[i-1].M
+            
+            print(f"M {M}")
 
-            T_i = expm(-sm.block(A) * thetas[i]) @ np.linalg.inv(link.M) @ self.links[i-1].M
+            T_i = expm(-sm.block(A) * thetas[i]) @ M 
             
             AdT_i = sm.adj(T_i)
             
@@ -592,6 +595,7 @@ class ScrewRobot: # Robot superclass for screw axis representation
             V_dot.append(V_dot_i)
 
         T_last = np.linalg.inv(self.m) @ self.links[-1].M
+        print(f"T_last M : {self.links[-1].M}")
         AdT.append(sm.adj(T_last))
         print()
         print("----"*30)

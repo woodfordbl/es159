@@ -1,3 +1,7 @@
+## NOTE: This does not work, the transformation matrices are incorrect within the links for M10 and M43
+## NOTE: Did not end up fixing this
+
+
 from toolkit import robo_toolkit as rt
 import numpy as np
 
@@ -12,6 +16,8 @@ class Lab3b(rt.ScrewRobot):
                       [0, 1, 0, 0],
                       [0, 0, 1, -L2],
                       [0, 0, 0, 1]])
+        
+        
         rho = 1
         radius = 0.1
 
@@ -40,7 +46,6 @@ class Lab3b(rt.ScrewRobot):
         G2 = inertial_matrix(mass2, radius, L2, 3)
         G3 = inertial_matrix(mass3, radius, L3, 1)
 
-        # Create a robot model with DH parameters
         links = [
                 rt.ScrewRevolute(w=[0,0,1], q=[0,0,0], qlim=None, mu=None, l=L1, rho= rho, rad=radius, G=G1, center=[0.5*L1,0,0]),
                 rt.ScrewRevolute(w=[0,-1,0], q=[L1,0,0], qlim=None, mu=None, l=L2, rho= rho, rad=radius, G=G2, center=[L1,0,-0.5*L2]),
@@ -63,7 +68,7 @@ taus = robot.idynamics(thetas=thetas, dthetas=dthetas, ddthetas=ddthetas, F = Ft
 
 print(taus)
 
-
+"""
 
 thetas = [0,np.pi/2,1]
 dthetas = [0,0,0]
@@ -92,3 +97,4 @@ print('---------'*20)
 print(taus1)
 print(taus2)
 print(taus3)
+"""
